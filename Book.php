@@ -13,27 +13,34 @@ class Book {
         $this->isbn = $isbn;
         $this->available = $available;
     }
-    public function getTitle(): string {
-        return $this->title;
-    }
-    public function getAuthor(): string {
-        return $this->author;
-    }
-    public function getIsbn(): int {
-        return $this->isbn;
-    }
-    public function isAvailable(): bool {
-        return $this->available;
-    }
-    // public function __call($method, $args) {
-    //     if (strpos($method, 'get') === 0) {
-    //         $property = lcfirst(substr($method, 3));
-    //         if (array_key_exists($property, $this->data)) {
-    //             return $this->data[$property];
-    //         }
-    //     }
-    //     throw new BadMethodCallException("Method $method does not exist.");
+    // public function getTitle(): string {
+    //     return $this->title;
     // }
+    // public function getAuthor(): string {
+    //     return $this->author;
+    // }
+    // public function getIsbn(): int {
+    //     return $this->isbn;
+    // }
+    // public function isAvailable(): bool {
+    //     return $this->available;
+    // }
+    public function __call($method, $args) {
+        $property = lcfirst(substr($method, 3)); // Extract the property name from the method
+        if (strncasecmp($method, 'get', 3) === 0) {
+            if (property_exists($this, $property)) {
+                return $this->$property;
+            } else {
+                throw new \Exception("Undefined property: $property");
+            }
+        } elseif (strncasecmp($method, 'set', 3) === 0) {
+            if (property_exists($this, $property)) {
+                $this->$property = $args[0];
+            } else {
+                throw new \Exception("Undefined property: $property");
+            }
+        }
+    }
 
     // public function getPrintableTitle(): string {
     //     $result = '<i>' . $this->title
